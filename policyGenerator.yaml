@@ -1,0 +1,89 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-openshift-plus
+placementBindingDefaults:
+  name: binding-policy-openshift-plus-hub
+policyDefaults:
+  namespace: policies-acs
+  policySets:
+    - openshift-plus-hub
+  remediationAction: enforce
+policies:
+# ACS Policies - start
+# - name: policy-acs-operator-central
+#   manifests:
+#     - path: input-acs-central/policy-acs-operator-central.yaml
+- name: policy-acs-central-status
+  # dependencies:
+  #   - name: policy-acs-operator-central
+  manifests:
+    - path: input-acs-central/policy-acs-central-status.yaml
+  remediationAction: inform
+- name: policy-acs-central-ca-bundle
+  consolidateManifests: false
+  dependencies:
+    - name: policy-acs-central-status
+  manifests:
+    - path: input-sensor/policy-acs-central-ca-bundle.yaml
+    - path: input-sensor/policy-acs-central-ca-bundle-v2.yaml
+- name: policy-acs-sync-resources
+  consolidateManifests: false
+  dependencies:
+    - name: policy-acs-central-ca-bundle
+  manifests:
+    - path: input-sensor/policy-acs-sync-resources.yaml
+# - name: policy-acs-monitor-certs
+#   consolidateManifests: false
+#   dependencies:
+#     - name: policy-acs-central-ca-bundle
+#   manifests:
+#     - path: input-sensor/acs-check-certificates.yaml
+#     - path: input-sensor/policy-acs-central-ca-bundle-expired.yaml
+#       remediationAction: inform
+# - name: policy-acs-central-ca-bundle-expired
+#   consolidateManifests: false
+#   complianceType: mustnothave
+#   dependencies:
+#     - name: policy-acs-monitor-certs
+#       compliance: "NonCompliant"
+#   policyAnnotations:
+#     policy.open-cluster-management.io/description: 'Policy will remove expired certificates created by the init-bundle in policy policy-acs-central-ca-bundle so we can create a new init-bundle'
+#   evaluationInterval:
+#     compliant: 1m
+#     noncompliant: 45s
+#   ## ignorePending prevents the NotCompliant dependency from causing this policy to always report as pending
+#   ignorePending: true
+#   manifests:
+#     - path: input-sensor/policy-acs-central-ca-bundle-expired.yaml
+#     - path: input-sensor/policy-acs-central-ca-bundle-v2.yaml
+- name: policy-advanced-managed-cluster-security
+  consolidateManifests: false
+  manifests:
+    - path: input-sensor/policy-advanced-managed-cluster-security.yaml
+  policySets:
+    - openshift-plus-clusters
+- name: policy-advanced-managed-cluster-status
+  manifests:
+    - path: input-sensor/policy-advanced-managed-cluster-status.yaml
+  policySets:
+    # - openshift-plus-hub
+    - openshift-plus-clusters
+  remediationAction: inform
+# ACS Policies - end
+
+policySets:
+  - description: The OpenShift Platform Plus policy set applies several policies
+      that will install the OpenShift Platform Plus products using best practices
+      that allow them to work well together. This policy set is focused on
+      the components that install to the Advanced Cluster Management hub.
+    name: openshift-plus-hub
+    placement:
+      placementPath: input/hub-placement.yaml
+  - description: The OpenShift Platform Plus policy set applies several policies
+      that install the OpenShift Platform Plus products using best practices
+      that allow them to work well together. This policy set is focused on
+      the components that install to every managed cluster.
+    name: openshift-plus-clusters
+    placement:
+      placementPath: input/clusters-placement.yaml

@@ -1,0 +1,75 @@
+# apiVersion: platform.stackrox.io/v1alpha1
+# kind: SecuredCluster
+# metadata:
+#   name: stackrox-secured-cluster-services
+#   namespace: rhacs-operator
+# spec:
+#   clusterName: |
+#     {{ fromSecret "open-cluster-management-agent" "hub-kubeconfig-secret" "cluster-name" | base64dec }}
+#   auditLogs:
+#     collection: Auto
+#   centralEndpoint: |
+#     {{ fromSecret "rhacs-operator" "sensor-tls" "acs-host" | base64dec }}
+#   admissionControl:
+#     listenOnCreates: false
+#     listenOnEvents: true
+#     listenOnUpdates: false
+#   scanner:
+#     scannerComponent: Disabled
+#   perNode:
+#     collector:
+#       collection: CORE_BPF
+#       imageFlavor: Regular
+#     taintToleration: TolerateTaints
+# ---
+apiVersion: v1
+data:
+  admission-control-cert.pem: '{{ fromSecret "rhacs-operator" "admission-control-tls" "admission-control-cert.pem" }}'
+  admission-control-key.pem: '{{ fromSecret "rhacs-operator" "admission-control-tls" "admission-control-key.pem" }}'
+  ca.pem: '{{ fromSecret "rhacs-operator" "admission-control-tls" "ca.pem" }}'
+kind: Secret
+metadata:
+  labels:
+    certificate_key_name: admission-control-cert.pem
+  name: admission-control-tls
+  namespace: policies-acs
+type: Opaque
+---
+apiVersion: v1
+data:
+  collector-cert.pem: '{{ fromSecret "rhacs-operator" "collector-tls" "collector-cert.pem" }}'
+  collector-key.pem: '{{ fromSecret "rhacs-operator" "collector-tls" "collector-key.pem" }}'
+  ca.pem: '{{ fromSecret "rhacs-operator" "collector-tls" "ca.pem" }}'
+kind: Secret
+metadata:
+  labels:
+    certificate_key_name: collector-cert.pem
+  name: collector-tls
+  namespace: policies-acs
+type: Opaque
+---
+apiVersion: v1
+data:
+  sensor-cert.pem: '{{ fromSecret "rhacs-operator" "sensor-tls" "sensor-cert.pem" }}'
+  sensor-key.pem: '{{ fromSecret "rhacs-operator" "sensor-tls" "sensor-key.pem" }}'
+  ca.pem: '{{ fromSecret "rhacs-operator" "sensor-tls" "ca.pem" }}'
+  acs-host: '{{ fromSecret "rhacs-operator" "sensor-tls" "acs-host" }}'
+kind: Secret
+metadata:
+  labels:
+    certificate_key_name: sensor-cert.pem
+  name: sensor-tls
+  namespace: policies-acs
+type: Opaque
+---
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: acs
+spec:
+  applicationMenu:
+    section: Red Hat applications
+    imageURL: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/OpenShift-LogoType.svg'
+  href: https://{{ (lookup "route.openshift.io/v1" "Route" "rhacs-operator" "central").spec.host }}
+  location: ApplicationMenu
+  text: 'Red Hat Advanced Cluster Security for Kubernetes'

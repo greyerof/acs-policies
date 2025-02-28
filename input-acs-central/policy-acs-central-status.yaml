@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: central
+  namespace: rhacs-operator
+status:
+  conditions:
+    - status: "True"
+      type: Available
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: central-db
+  namespace: rhacs-operator
+status:
+  conditions:
+    - status: "True"
+      type: Available
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scanner-db
+  namespace: rhacs-operator
+status:
+  conditions:
+    - status: "True"
+      type: Available
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scanner
+  namespace: rhacs-operator
+status:
+  conditions:
+    - status: "True"
+      type: Available
