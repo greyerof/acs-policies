@@ -3,9 +3,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
     argocd.argoproj.io/sync-wave: "2"
   name: create-cluster-init-bundle-v2
   namespace: stackrox
@@ -14,8 +11,6 @@ metadata:
 spec:
   template:
     metadata:
-      annotations:
-        argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
       labels:
         init-bundle: central
     spec:
