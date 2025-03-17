@@ -101,7 +101,7 @@ policies:
     - SI System and Information Integrity
   consolidateManifests: false
   policyAnnotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "5"
   controls:
     - SI-5 Security Alerts Advisories and Directives
   manifests:
@@ -109,6 +109,8 @@ policies:
   policySets:
     - openshift-plus-clusters
 - name: policy-advanced-managed-cluster-status
+  policyAnnotations:
+    argocd.argoproj.io/sync-wave: "5"
   categories:
     - SI System and Information Integrity
   controls:
