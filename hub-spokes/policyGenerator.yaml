@@ -25,30 +25,34 @@ policies:
     - SC-1 Policy and Procedures
   manifests:
     - path: input-acs-central/policy-acs-operator-central.yaml
-# - name: policy-acs-central-status
-#   categories:
-#     - SI System and Information Integrity
-#   controls:
-#     - SI-5 Security Alerts Advisories and Directives
-#   dependencies:
-#     - name: policy-acs-operator-central
-#   manifests:
-#     - path: input-acs-central/policy-acs-central-status.yaml
-#   remediationAction: inform
-# - name: policy-acs-central-ca-bundle
-#   categories:
-#     - SI System and Information Integrity
-#   consolidateManifests: false
-#   controls:
-#     - SI-5 Security Alerts Advisories and Directives
-#   dependencies:
-#     - name: policy-acs-central-status
-#   manifests:
-#     - path: input-sensor/policy-acs-central-ca-bundle.yaml
-#     - path: input-sensor/policy-acs-central-ca-bundle-v2.yaml
-#     - path: input-sensor/policy-acs-central-ca-bundle-v1.yaml
-#       complianceType: mustnothave
+- name: policy-acs-central-status
+  categories:
+    - SI System and Information Integrity
+  controls:
+    - SI-5 Security Alerts Advisories and Directives
+  dependencies:
+    - name: policy-acs-operator-central
+  manifests:
+    - path: input-acs-central/policy-acs-central-status.yaml
+  remediationAction: inform
+- name: policy-acs-central-ca-bundle
+  policyAnnotations:
+    argocd.argoproj.io/sync-wave: "2"
+  categories:
+    - SI System and Information Integrity
+  consolidateManifests: false
+  controls:
+    - SI-5 Security Alerts Advisories and Directives
+  dependencies:
+    - name: policy-acs-central-status
+  manifests:
+    - path: input-sensor/policy-acs-central-ca-bundle.yaml
+    - path: input-sensor/policy-acs-central-ca-bundle-v2.yaml
+    - path: input-sensor/policy-acs-central-ca-bundle-v1.yaml
+      complianceType: mustnothave
 - name: policy-acs-sync-resources
+  policyAnnotations:
+    argocd.argoproj.io/sync-wave: "3"
   categories:
     - SI System and Information Integrity
   consolidateManifests: false
@@ -59,6 +63,8 @@ policies:
   manifests:
     - path: input-sensor/policy-acs-sync-resources.yaml
 - name: policy-acs-monitor-certs
+  policyAnnotations:
+    argocd.argoproj.io/sync-wave: "4"
   categories:
     - SC System and Communications Protection
   consolidateManifests: false
@@ -103,8 +109,6 @@ policies:
   policySets:
     - openshift-plus-clusters
 - name: policy-advanced-managed-cluster-status
-  policyAnnotations:
-    argocd.argoproj.io/sync-wave: "3"
   categories:
     - SI System and Information Integrity
   controls:
